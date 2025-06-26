@@ -1,0 +1,36 @@
+# Ignore data directory (likely large or sensitive)
+data/
+
+# Ignore notebooks (intermediate output or exploration)
+notebooks/
+.ipynb_checkpoints/
+
+# Ignore PyCharm settings
+.idea/
+
+# Ignore archive files and directories
+Archive/
+Archive/archive.py
+
+# Ignore compiled Python artifacts
+__pycache__/
+*.py[cod]
+*.so
+
+# Ignore virtual environments
+.venv/
+.venv*/
+env/
+.env
+
+# Ignore macOS metadata
+.DS_Store
+
+# Ignore Gurobi logs and intermediate ILP files
+model_iis.ilp
+m_iis.ilp
+model.lp
+minimal_model_iis.ilp
+
+# Ignore anything inside custom build folders (if any)
+harvest_planning/
