@@ -1,3 +1,5 @@
+# Requires Python 3.10 or higher
+
 geopandas==1.0.1
 gurobipy==11.0.0
 k_means_constrained==0.7.2

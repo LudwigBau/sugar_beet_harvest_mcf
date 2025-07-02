@@ -1,49 +1,67 @@
 # Integrating Harvest Planning Along the Supply Chain: A Case Study From the European Sugar Beet Industry
 
-This repository implements a multi-commodity flow (MCF) model and companion heuristic to plan sugar-beet loading, 
-inventory, and production in an integrated, time-expanded network.  We benchmark against a customizable loading-schedule 
-heuristic that mimics current industry practice and demonstrate double-digit logistics cost savings (15–20%) on both 
+This repository implements a multi-commodity flow (MCF) model and companion heuristic to plan sugar-beet loading,
+inventory, and production in an integrated, time-expanded network.  We benchmark against a customizable loading-schedule
+heuristic that mimics current industry practice and demonstrate double-digit logistics cost savings (15–20%) on both
 simulated and real European data.
 
-**Key features**  
-- **MCF model** (Gurobi‐solvable) for loaders & beet flows over hourly periods  
-- **Rolling‐horizon framework**: weekly subproblems with multi-step coarse-to-fine  
-- **Heuristic baseline**: `create_production_plan_schedule_tau()` in  
-  `src/mcf_utils/heuristic_utils.py`  
-- **Custom Benchmark**: drop in your own loading logic; infeasible runs produce IIS files  
-- **Reproducible experiments**: data download, routing, scheduling, and MIP in one script  
+**Key features**
+- **MCF model** (Gurobi‐solvable) for loaders & beet flows over hourly periods
+- **Rolling‐horizon framework**: weekly subproblems with multi-step coarse-to-fine
+- **Heuristic baseline**: `create_production_plan_schedule_tau()` in
+  `src/mcf_utils/heuristic_utils.py`
+- **Custom Benchmark**: drop in your own loading logic; infeasible runs produce IIS files
+- **Reproducible experiments**: data download, routing, scheduling, and MIP in one script
 
 ## Quickstart
 
 0. **Clone this repository**
-    
+
     ```
-   git clone https://github.com/LudwigBau/sugar_beet_mcf_public.git 
+   git clone https://github.com/LudwigBau/sugar_beet_mcf_public.git
    cd sugar_beet_mcf_public
     ```
+1. **Install**
 
-1. **Install**  
+    > **Python 3.10 is required**  
+    > This is enforced via `.python-version` (used with [pyenv](https://github.com/pyenv/pyenv)) and specified in `pyproject.toml`.
+    
+    **1.1 Preferred: Using [uv](https://docs.astral.sh/uv/getting-started/installation/)**
+
+    If you use `uv`, which is faster and more reliable than pip:
+
+    ```bash
+    uv venv
+    uv pip install -e .  # installs in editable mode from pyproject.toml
+    source .venv/bin/activate
    ```
-   pip install -r requirements.txt       # standard install
-   pip install -e .                       # editable/developer mode
-   ```
+   
+    **1.2 Alternative: Using pip**
+   
+    If you prefer plain pip and virtual environments:
+    ```        
+    python -m venv .venv
+    source .venv/bin/activate
+    pip install -e .  # installs from pyproject.toml
+    ```
 2. **Configure your Gurobi license**
 
-    Make sure you have a valid Gurobi license installed and the `GRB_LICENSE_FILE` environment variable set.
-    See the Gurobi Support page for licensing instructions: https://support.gurobi.com
+   Make sure you have a valid Gurobi license installed and the `GRB_LICENSE_FILE` environment variable set.
+   See the Gurobi Support page for licensing instructions: https://support.gurobi.com
+
 
 3. **Download Data**
 
     The dataset is hosted on Zenodo (https://zenodo.org/records/15743878) under restricted access and is available exclusively for academic research.
-    
+
     To obtain the required .csv files request access via Zenodo.
-    
+
 - After approval, manually download the following files from Zenodo:
 
-    - simulated_fields.csv 
-    - simulated_machine_df.csv 
+    - simulated_fields.csv
+    - simulated_machine_df.csv
     - simulated_cost_matrix_df.csv
-    
+
   Save all files to the following folder in your cloned repo:
     ```
     data/simulated_data/
@@ -67,10 +85,13 @@ Once the files are in place, run:
     python scripts/run_experiments.py
     ```
 
+## Linting and Formatting
+This project uses [ruff](https://docs.astral.sh/ruff/) for code linting and formatting. Changes will be automatically linted and formatted before committing via [pre-commit](https://pre-commit.com)
+
 
 ## Results & Excel Export
 
-After running `scripts/run_experiments.py`, all single‐instance and rolling‐horizon results are written to Excel 
+After running `scripts/run_experiments.py`, all single‐instance and rolling‐horizon results are written to Excel
 workbooks under:
 
 results/excel/
@@ -87,12 +108,12 @@ results/excel/{combined\_key}\_flow\_results.xlsx
 
 
 **Sheets** (standardized for every key):
-- **Beet Movement**: time‐series of volumes harvested, loaded, stored, processed  
-- **Machine Schedule**: period‐by‐period start/end positions (or “idle”) per loader  
-- **Field Yield**: raw remaining volume per field × period  
-- **Machinery Cost**: travel, operation & partial‐work costs per machine × period   
-- **Revenue and Unmet Demand**: sugar‐yield, revenue, unmet‐demand per period  
-- **Accounting**: weekly accounting breakdown (work, travel, inventory, penalties)  
+- **Beet Movement**: time‐series of volumes harvested, loaded, stored, processed
+- **Machine Schedule**: period‐by‐period start/end positions (or “idle”) per loader
+- **Field Yield**: raw remaining volume per field × period
+- **Machinery Cost**: travel, operation & partial‐work costs per machine × period
+- **Revenue and Unmet Demand**: sugar‐yield, revenue, unmet‐demand per period
+- **Accounting**: weekly accounting breakdown (work, travel, inventory, penalties)
 - **Hidden Idle** *(if `tau` & `L_bar` available)*: loader‐level hidden‐idle metrics
 
 Use these sheets directly in Excel
@@ -103,12 +124,12 @@ A single workbook aggregates all weeks and compares Gurobi vs. heuristic:
 
 results/excel/consolidated\_weekly\_results\_{rolling|groupID}.xlsx
 
-**Worksheets**:  
-- One sheet per metric (e.g. “Beet Movement”, “Machine Schedule”, “Accounting”, etc.)  
-- Within each sheet, Gurobi and heuristic tables appear one after the other, separated by blank rows  
-- A “KPI Comparison” sheet reports cost‐difference %, margins, unmet‐demand, time, and MIP gap  
+**Worksheets**:
+- One sheet per metric (e.g. “Beet Movement”, “Machine Schedule”, “Accounting”, etc.)
+- Within each sheet, Gurobi and heuristic tables appear one after the other, separated by blank rows
+- A “KPI Comparison” sheet reports cost‐difference %, margins, unmet‐demand, time, and MIP gap
 
-All Excel output uses multi‐index columns where appropriate—just point your manuscript or analysis script at these 
+All Excel output uses multi‐index columns where appropriate—just point your manuscript or analysis script at these
 files to reproduce every table and plot in the paper.
 
 
@@ -131,7 +152,7 @@ MIPGap = 0.1%, TimeLimit = 3 600 s per run (max 7 200 s for coarse→fine)
 
 ## Custom Benchmark
 
-All heuristic runs will now include your custom benchmark and, in case of infeasibility, an IIS file will be generated 
+All heuristic runs will now include your custom benchmark and, in case of infeasibility, an IIS file will be generated
 for diagnosis.
 
 ### 1. Locate the heuristic
@@ -167,10 +188,10 @@ def create_production_plan_schedule_tau(
 
 ### 3. Metrics collected
 
-When you re-run the experiments, all heuristic/benchmark results will use the 
+When you re-run the experiments, all heuristic/benchmark results will use the
 adapted function.
 
-Note new benchmark columns will not appear alongside the 
+Note new benchmark columns will not appear alongside the
 standard heuristic results. Please save them separately.
 
 ### 4. Infeasibility output
@@ -196,6 +217,6 @@ pickle files.
 
 ## License
 
-This software is made available under a custom academic-use license.  
-Commercial use is strictly prohibited without prior written consent.  
+This software is made available under a custom academic-use license.
+Commercial use is strictly prohibited without prior written consent.
 See the [LICENSE](LICENSE) file for full terms.
